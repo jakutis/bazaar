@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <p>This is a demo for an inter window communication.</p>
+        <p>Open another tab of this web page, click anywhere in the window and see a list update with the same items in all tabs.</p>
+        <ul id="log">
+        </ul>
+        <script>
+window.log = function() {
+    var el = document.getElementById('log');
+    var args = [].slice.apply(arguments, [0]);
+    var dumps = [];
+    for(var i = 0; i < args.length; i += 1) {
+        dumps.push((typeof args[i]) + '(' + args[i] + ')');
+    }
+    el.innerHTML = "<li>" + dumps + "</li>" + el.innerHTML;
+};
+        </script>
+        <script src="json2.js"></script>
+        <script src="bazaar.js"></script>
+        <script>
+var b = bazaar('bazaar-worker.js');
+if(b === null) {
+    log('your web browser is not supported');
+} else {
+    document.onmousedown = function() {
+        b.broadcast(new Date().getTime());
+    };
+    b.listen(function(ts) {
+        log(ts);
+    });
+}
+        </script>
+    </body>
+</html>

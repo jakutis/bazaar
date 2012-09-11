@@ -1,0 +1,30 @@
+{
+    "name": "bazaar",
+    "description": "A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication",
+    "version": "0.0.1",
+    "keywords": ["ipc", "rpc", "pubsub", "emitter", "browser", "messages", "window", "hub", "browserify", "iwc", "communication"],
+    "homepage": "https://jakut.is/git/BAZAAR/about/",
+    "maintainers": [{
+        "name": "Vytautas Jakutis",
+        "email": "vytautas@jakut.is",
+        "web": "https://jakut.is/"
+    }],
+    "bin": {
+    },
+    "contributors": [],
+    "bugs": "mailto:vytautas@jakut.is",
+    "license": {
+        "type": "mit",
+        "url": "https://jakut.is/git/BAZAAR/plain/LICENSE"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://jakut.is/BAZAAR"
+    },
+    "dependencies": {
+    },
+    "main": "bazaar.js",
+    "engines": {
+        "node": "*"
+    }
+}
