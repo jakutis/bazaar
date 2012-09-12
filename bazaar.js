@@ -37,7 +37,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     } else {
         context[name] = definition(name, context);
     }
-})('bazaar', this, function (name, w) {
+})('bazaar', this, function (name, context) {
+    var w = window;
     return function(workerURL, ns) {
         var broadcast, listen, w3 = !!w.addEventListener, get, set;
         ns = ns || '__bazaar__';
