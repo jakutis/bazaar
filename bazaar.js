@@ -113,7 +113,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         }
                 });
             })();
-        } else {
+        }
+        if(storage !== null) {
+            try {
+                w.document.appendChild(w.document.createElement('script'));
+            } catch(e) {
+                storage = null;
+            }
+        }
+        if(storage === null) {
             if(test('localStorage', w)) {
                 storage = w.localStorage;
             } else if(test('globalStorage', w) && test(w.location.hostname, w.globalStorage)) {
