@@ -38,5 +38,10 @@
   "main": "bazaar.js",
   "engines": {
     "node": "*"
+  },
+  "jam": {
+    "dependencies": {},
+    "main": "bazaar.js",
+    "shim": {}
   }
 }
