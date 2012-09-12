@@ -2,9 +2,11 @@
 
 Description: A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication
 
-Home page: https://jakut.is/git/BAZAAR/about/
+Home page: [jakut.is/git/BAZAAR/about](https://jakut.is/git/BAZAAR/about/)
 
-[npm](https://npmjs.org): [bazaar](https://npmjs.org/package/bazaar)
+[npm](https://npmjs.org) package: [bazaar](https://npmjs.org/package/bazaar)
+
+[jam](https://jamjs.org) package: [bazaar](https://jamjs.org/packages/#/details/bazaar)
 
 License: [MIT](https://jakut.is/git/BAZAAR/plain/LICENSE)
 
