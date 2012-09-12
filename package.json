@@ -15,6 +15,11 @@
     "iwc",
     "communication"
   ],
+  "categories": [
+    "Data",
+    "Events",
+    "Utilities"
+  ],
   "homepage": "https://jakut.is/git/BAZAAR/about/",
   "maintainers": [
     {
