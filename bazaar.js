@@ -30,9 +30,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * THE SOFTWARE.
  */
 (function (name, context, definition) {
-    if (typeof module != 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports) {
         module.exports = definition(name, context);
-    } else if (typeof define == 'function' && typeof define.amd  == 'object') {
+    } else if (typeof define === 'function' && typeof define.amd === 'object') {
         define(definition);
     } else {
         context[name] = definition(name, context);
