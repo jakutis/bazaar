@@ -39,9 +39,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
 })('bazaar', this, function (name, context) {
     var w = window;
-    return function(workerURL, ns) {
-        var broadcast, listen, w3 = !!w.addEventListener, get, set;
+    return function(workerURL, ns, recentEventsCount) {
+        var broadcast, listen, w3 = !!w.addEventListener, get, set, remove;
         ns = ns || '__bazaar__';
+        recentEventsCount = recentEventsCount || 10;
 
         var test = function(name, obj) {
             try {
@@ -99,18 +100,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         return key.replace(forbiddenCharsRegex, '___');
                 }
                 set = withIEStorage(function(storage, key, val) {
-                        key = ieKeyFix(key);
-                        storage.setAttribute(key, val);
-                        storage.save('localStorage');
+                    key = ieKeyFix(key);
+                    storage.setAttribute(key, val);
+                    storage.save('localStorage');
                 });
                 get = withIEStorage(function(storage, key) {
-                        key = ieKeyFix(key);
-                        var value = storage.getAttribute(key);
-                        if(typeof value === 'undefined' || value === null) {
-                            return '';
-                        } else {
-                            return value.toString();
-                        }
+                    key = ieKeyFix(key);
+                    var value = storage.getAttribute(key);
+                    if(typeof value === 'undefined' || value === null) {
+                        return '';
+                    } else {
+                        return value.toString();
+                    }
+                });
+                remove = withIEStorage(function(storage, key) {
+                    key = ieKeyFix(key);
+                    storage.removeAttribute(key);
+                    storage.save('localStorage');
                 });
             })();
         }
@@ -140,6 +146,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         return value.toString();
                     }
                 };
+                remove = function(key) {
+                    storage.removeItem(key);
+                };
             } else {
                 return null;
             }
@@ -154,11 +163,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 listen = function(cb) {
                     if(w3) {
                         worker.port.addEventListener('message', function(e) {
-                            cb(e.data);
+                            cb(null, e.data);
                         }, false);
                     } else {
                         worker.port.attachEvent('onmessage', function(e) {
-                            cb(e.data);
+                            cb(null, e.data);
                         });
                     }
                 };
@@ -166,35 +175,56 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             })();
         } else {
             (function() {
-                var check, getCount, checkedCount, listeners = [];
-                getCount = function() {
-                    var count = get(ns + '.count');
+                var check, getInt, checkedLast, listeners = [];
+                getInt = function(key) {
+                    var n = get(key);
                     try {
-                        count = parseInt(count, 10);
-                        return isNaN(count) ? 0 : count;
+                        n = parseInt(n, 10);
+                        return isNaN(n) ? 0 : n;
                     } catch(e) {
                         return 0;
                     }
                 };
-                checkedCount = getCount();
+                checkedLast = getInt(ns + '.last');
                 broadcast = function(data) {
-                    var count = (getCount() + 1).toString();
-                    set(ns + '.' + count, JSON.stringify(data));
-                    set(ns + '.count', count);
+                    var first = getInt(ns + '.first');
+                    var last = getInt(ns + '.last');
+                    last += 1;
+                    set(ns + '.' + last, JSON.stringify(data));
+                    set(ns + '.last', last.toString());
+
+                    if(last - first > recentEventsCount) {
+                        if(first > 0) {
+                            remove(ns + '.' + first);
+                        }
+                        set(ns + '.first', first + 1);
+                    }
                 };
                 listen = function(cb) {
                     listeners.push(cb);
                 };
                 check = function() {
-                    var count = getCount();
-                    if(count !== checkedCount) {
-                        for(var i = checkedCount + 1; i <= count; i += 1) {
-                            var data = JSON.parse(get(ns + '.' + i));
-                            for(var j = 0; j < listeners.length; j += 1) {
-                                listeners[j](data);
+                    var i, j, data, last, err, errored;
+                    last = getInt(ns + '.last');
+                    if(last !== checkedLast) {
+                        for(i = checkedLast + 1; i <= last; i += 1) {
+                            data = get(ns + '.' + i);
+                            if(data === '') {
+                                if(err === null) {
+                                    err = new Error('cannot read event');
+                                    for(j = 0; j < listeners.length; j += 1) {
+                                        listeners[j](err, null);
+                                    }
+                                }
+                            } else {
+                                err = null;
+                                data = JSON.parse(data);
+                                for(j = 0; j < listeners.length; j += 1) {
+                                    listeners[j](null, data);
+                                }
                             }
                         }
-                        checkedCount = count;
+                        checkedLast = last;
                     }
                 };
                 if('onstorage' in w) {
