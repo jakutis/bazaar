@@ -53,7 +53,33 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
 
         var storage = null;
-        if(test('ActiveXObject', w)) {
+        if(test('localStorage', w)) {
+            storage = w.localStorage;
+        } else if(test('globalStorage', w) && test(w.location.hostname, w.globalStorage)) {
+            storage = w.globalStorage[w.location.hostname];
+        }
+        if(storage !== null) {
+            set = function(key, value) {
+                storage.setItem(key, value);
+            };
+            get = function(key) {
+                var value = storage.getItem(key);
+                if(typeof value === 'undefined' || value === null) {
+                    return '';
+                } else {
+                    return value.toString();
+                }
+            };
+            remove = function(key) {
+                storage.removeItem(key);
+            };
+            try {
+                get('test');
+            } catch(e) {
+                storage = null;
+            }
+        }
+        if(storage === null && test('ActiveXObject', w)) {
             (function() {
                 var storageOwner, storageContainer;
                 // Since #userData storage applies only to specific paths, we need to
@@ -118,40 +144,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     storage.removeAttribute(key);
                     storage.save('localStorage');
                 });
+                try {
+                    get('test');
+                } catch(e) {
+                    storage = null;
+                }
             })();
         }
-        if(storage !== null) {
-            try {
-                w.document.appendChild(w.document.createElement('script'));
-                get('test');
-            } catch(e) {
-                storage = null;
-            }
-        }
         if(storage === null) {
-            if(test('localStorage', w)) {
-                storage = w.localStorage;
-            } else if(test('globalStorage', w) && test(w.location.hostname, w.globalStorage)) {
-                storage = w.globalStorage[w.location.hostname];
-            }
-            if(storage !== null) {
-                set = function(key, value) {
-                    storage.setItem(key, value);
-                };
-                get = function(key) {
-                    var value = storage.getItem(key);
-                    if(typeof value === 'undefined' || value === null) {
-                        return '';
-                    } else {
-                        return value.toString();
-                    }
-                };
-                remove = function(key) {
-                    storage.removeItem(key);
-                };
-            } else {
-                return null;
-            }
+            return null;
         }
 
         if('SharedWorker' in w) {
