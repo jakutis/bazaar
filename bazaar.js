@@ -39,121 +39,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
 })('bazaar', this, function (name, context) {
     var w = window;
-    return function(workerURL, ns, recentEventsCount) {
+    return function(workerURL, ns, recentEventsCount, iframeURL) {
         var broadcast, listen, w3 = !!w.addEventListener, get, set, remove;
         ns = ns || '__bazaar__';
         recentEventsCount = recentEventsCount || 10;
-
-        var test = function(name, obj) {
-            try {
-                return typeof obj[name] !== 'undefined' && obj[name];
-            } catch(e) {
-                return false;
-            }
-        };
-
-        var storage = null;
-        if(test('localStorage', w)) {
-            storage = w.localStorage;
-        } else if(test('globalStorage', w) && test(w.location.hostname, w.globalStorage)) {
-            storage = w.globalStorage[w.location.hostname];
-        }
-        if(storage !== null) {
-            set = function(key, value) {
-                storage.setItem(key, value);
-            };
-            get = function(key) {
-                var value = storage.getItem(key);
-                if(typeof value === 'undefined' || value === null) {
-                    return '';
-                } else {
-                    return value.toString();
-                }
-            };
-            remove = function(key) {
-                storage.removeItem(key);
-            };
-            try {
-                get('test');
-            } catch(e) {
-                storage = null;
-            }
-        }
-        if(storage === null && test('ActiveXObject', w)) {
-            (function() {
-                var storageOwner, storageContainer;
-                // Since #userData storage applies only to specific paths, we need to
-                // somehow link our data to a specific path.  We choose /favicon.ico
-                // as a pretty safe option, since all browsers already make a request to
-                // this URL anyway and being a 404 will not hurt us here.  We wrap an
-                // iframe pointing to the favicon in an ActiveXObject(htmlfile) object
-                // (see: http://msdn.microsoft.com/en-us/library/aa752574(v=VS.85).aspx)
-                // since the iframe access rules appear to allow direct access and
-                // manipulation of the document element, even for a 404 page.  This
-                // document can be used instead of the current document (which would
-                // have been limited to the current path) to perform #userData storage.
-                try {
-                        storageContainer = new w.ActiveXObject('htmlfile');
-                        storageContainer.open();
-                        storageContainer.write('<s' + 'cript>document.w=window</s' + 'cript><iframe src="/favicon.ico"></frame>');
-                        storageContainer.close();
-                        storageOwner = storageContainer.w.frames[0].document;
-                        storage = storageOwner.createElement('div');
-                } catch(e) {
-                        // somehow ActiveXObject instantiation failed (perhaps some special
-                        // security settings or otherwse), fall back to per-path storage
-                        storage = w.document.createElement('div');
-                        storageOwner = w.document.body;
-                }
-                function withIEStorage(storeFunction) {
-                        return function() {
-                                var args = Array.prototype.slice.call(arguments, 0);
-                                args.unshift(storage);
-                                // See http://msdn.microsoft.com/en-us/library/ms531081(v=VS.85).aspx
-                                // and http://msdn.microsoft.com/en-us/library/ms531424(v=VS.85).aspx
-                                storageOwner.appendChild(storage);
-                                storage.addBehavior('#default#userData');
-                                storage.load('localStorage');
-                                var result = storeFunction.apply(null, args);
-                                storageOwner.removeChild(storage);
-                                return result;
-                        };
-                }
-
-                // In IE7, keys may not contain special chars. See all of https://github.com/marcuswestin/store.js/issues/40
-                var forbiddenCharsRegex = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g");
-                function ieKeyFix(key) {
-                        return key.replace(forbiddenCharsRegex, '___');
-                }
-                set = withIEStorage(function(storage, key, val) {
-                    key = ieKeyFix(key);
-                    storage.setAttribute(key, val);
-                    storage.save('localStorage');
-                });
-                get = withIEStorage(function(storage, key) {
-                    key = ieKeyFix(key);
-                    var value = storage.getAttribute(key);
-                    if(typeof value === 'undefined' || value === null) {
-                        return '';
-                    } else {
-                        return value.toString();
-                    }
-                });
-                remove = withIEStorage(function(storage, key) {
-                    key = ieKeyFix(key);
-                    storage.removeAttribute(key);
-                    storage.save('localStorage');
-                });
-                try {
-                    get('test');
-                } catch(e) {
-                    storage = null;
-                }
-            })();
-        }
-        if(storage === null) {
-            return null;
-        }
+        iframeURL = iframeURL || '/favicon.ico';
 
         if('SharedWorker' in w) {
             (function() {
@@ -175,6 +65,124 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 worker.port.start();
             })();
         } else {
+            var test = function(name, obj) {
+                try {
+                    return typeof obj[name] !== 'undefined' && obj[name];
+                } catch(e) {
+                    return false;
+                }
+            };
+
+            var storage = null;
+            if(test('ActiveXObject', w)) {
+                (function() {
+                    var storageOwner, storageContainer;
+                    // Since #userData storage applies only to specific paths, we need to
+                    // somehow link our data to a specific path.  We choose /favicon.ico
+                    // as a pretty safe option, since all browsers already make a request to
+                    // this URL anyway and being a 404 will not hurt us here.  We wrap an
+                    // iframe pointing to the favicon in an ActiveXObject(htmlfile) object
+                    // (see: http://msdn.microsoft.com/en-us/library/aa752574(v=VS.85).aspx)
+                    // since the iframe access rules appear to allow direct access and
+                    // manipulation of the document element, even for a 404 page.  This
+                    // document can be used instead of the current document (which would
+                    // have been limited to the current path) to perform #userData storage.
+                    try {
+                            storageContainer = new w.ActiveXObject('htmlfile');
+                            storageContainer.open();
+                            storageContainer.write('<s' + 'cript>document.w=window</s' + 'cript><iframe src="' + iframeURL + '"></frame>');
+                            storageContainer.close();
+                            storageOwner = storageContainer.w.frames[0].document;
+                            storage = storageOwner.createElement('div');
+                    } catch(e) {
+                            // somehow ActiveXObject instantiation failed (perhaps some special
+                            // security settings or otherwse), fall back to per-path storage
+                            storage = w.document.createElement('div');
+                            storageOwner = w.document.body;
+                    }
+                    function withIEStorage(storeFunction) {
+                            return function() {
+                                    var args = Array.prototype.slice.call(arguments, 0);
+                                    args.unshift(storage);
+                                    // See http://msdn.microsoft.com/en-us/library/ms531081(v=VS.85).aspx
+                                    // and http://msdn.microsoft.com/en-us/library/ms531424(v=VS.85).aspx
+                                    storageOwner.appendChild(storage);
+                                    storage.addBehavior('#default#userData');
+                                    storage.load('localStorage');
+                                    var result = storeFunction.apply(null, args);
+                                    storageOwner.removeChild(storage);
+                                    return result;
+                            };
+                    }
+
+                    // In IE7, keys may not contain special chars. See all of https://github.com/marcuswestin/store.js/issues/40
+                    var forbiddenCharsRegex = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g");
+                    function ieKeyFix(key) {
+                            return key.replace(forbiddenCharsRegex, '___');
+                    }
+                    set = withIEStorage(function(storage, key, val) {
+                        key = ieKeyFix(key);
+                        storage.setAttribute(key, val);
+                        storage.save('localStorage');
+                    });
+                    get = withIEStorage(function(storage, key) {
+                        key = ieKeyFix(key);
+                        var value = storage.getAttribute(key);
+                        if(typeof value === 'undefined' || value === null) {
+                            return '';
+                        } else {
+                            return value.toString();
+                        }
+                    });
+                    remove = withIEStorage(function(storage, key) {
+                        key = ieKeyFix(key);
+                        storage.removeAttribute(key);
+                        storage.save('localStorage');
+                    });
+                })();
+            }
+            if(storage !== null) {
+                try {
+                    get('test');
+                    w.document.appendChild(w.document.createElement('script'));
+                } catch(e) {
+                    storage = null;
+                }
+            }
+            if(storage === null) {
+                if(test('localStorage', w)) {
+                    storage = w.localStorage;
+                } else if(test('globalStorage', w) && test(w.location.hostname, w.globalStorage)) {
+                    storage = w.globalStorage[w.location.hostname];
+                }
+                if(storage !== null) {
+                    set = function(key, value) {
+                        storage.setItem(key, value);
+                    };
+                    get = function(key) {
+                        var value = storage.getItem(key);
+                        if(typeof value === 'undefined' || value === null) {
+                            return '';
+                        } else {
+                            return value.toString();
+                        }
+                    };
+                    remove = function(key) {
+                        storage.removeItem(key);
+                    };
+                }
+            }
+            if(storage !== null) {
+                try {
+                    get('test');
+                } catch(e) {
+                    storage = null;
+                }
+            }
+            if(storage === null) {
+                return null;
+            }
+
             (function() {
                 var check, getInt, checkedLast, listeners = [];
                 getInt = function(key) {
