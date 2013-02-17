@@ -21,6 +21,7 @@
   ],
   "dependencies": {},
   "development": {},
+  "main": "bazaar.js",
   "scripts": [
     "bazaar.js"
   ],
