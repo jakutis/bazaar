@@ -1,0 +1,24 @@
+{
+  "name": "bazaar",
+  "description": "A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication",
+  "version": "0.2.1",
+  "keywords": [
+    "ipc",
+    "rpc",
+    "pubsub",
+    "emitter",
+    "browser",
+    "messages",
+    "window",
+    "hub",
+    "browserify",
+    "iwc",
+    "communication"
+  ],
+  "dependencies": {},
+  "development": {},
+  "scripts": [
+    "bazaar.js"
+  ],
+  "license": "MIT"
+}
