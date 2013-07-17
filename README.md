@@ -1,6 +1,6 @@
 # Bazaar
 
-Description: A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication
+Description: A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication. Let's you broadcast messages to all opened windows, which are listening.
 
 Home page: [jakut.is/git/BAZAAR/about](https://jakut.is/git/BAZAAR/about/)
 
@@ -26,7 +26,10 @@ Author: [Vytautas Jakutis](https://jakut.is)
         document.onmousedown = function() {
             hub.broadcast(new Date().getTime());
         };
-        hub.listen(function(ts) {
+        hub.listen(function(err, ts) {
+            if(err) {
+                return alert("An error occurred when receiving a message.");
+            }
             alert(ts);
         });
     }
