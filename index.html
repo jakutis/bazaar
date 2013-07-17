@@ -27,6 +27,9 @@ if(b === null) {
         b.broadcast(new Date().getTime());
     };
     b.listen(function(err, ts) {
+        if(err) {
+            return log("An error occurred when receiving a message.");
+        }
         log(ts);
     });
 }
