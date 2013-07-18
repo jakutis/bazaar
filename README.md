@@ -6,6 +6,10 @@ Home page: [jakut.is/git/BAZAAR/about](https://jakut.is/git/BAZAAR/about/)
 
 [npm](https://npmjs.org) package: [bazaar](https://npmjs.org/package/bazaar)
 
+![npm stats](https://nodei.co/npm/bazaar.png)
+
+![npm download stats](https://nodei.co/npm-dl/bazaar.png?months=9)
+
 [jam](http://jamjs.org) package: [bazaar](http://jamjs.org/packages/#/details/bazaar)
 
 License: [MIT](https://jakut.is/git/BAZAAR/plain/LICENSE)
