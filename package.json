@@ -20,7 +20,9 @@
     "Events",
     "Utilities"
   ],
-  "homepage": "https://jakut.is/git/BAZAAR/about/",
+  "author": "Vytautas Jakutis <vytautas@jakut.is> (https://jakut.is/)",
+  "bugs": "https://github.com/jakutis/albumkit/issues",
+  "homepage": "https://www.npmjs.org/package/bazaar",
   "maintainers": [
     {
       "name": "Vytautas Jakutis",
@@ -28,19 +30,17 @@
       "web": "https://jakut.is/"
     }
   ],
-  "bin": {},
   "contributors": [],
-  "bugs": "mailto:vytautas@jakut.is",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://jakut.is/git/BAZAAR"
+    "url": "https://github.com/jakutis/bazaar"
   },
   "dependencies": {},
   "devDependencies": {
     "mocha": "1.9.x",
     "phantomjs": "1.9.x",
-    "mocha-phantomjs": "3.0.0"
+    "mocha-phantomjs": "3.0.x"
   },
   "main": "bazaar.js",
   "engines": {
