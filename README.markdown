@@ -1,6 +1,6 @@
 # bazaar
 
-A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication. Let's you broadcast messages to all opened windows, which are listening.
+A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication.
 
 - [Overview](#overview)
 - [Installation](#installation)
@@ -9,6 +9,7 @@ A publish-subscribe (broadcast-listen) layer for same-origin inter-window commun
 
 ## Overview
 
+* Let's you broadcast messages to all opened windows, which are listening.
 * Tested on these web browsers:
   * Mozilla Firefox 2.0+
   * Opera 10.50+
