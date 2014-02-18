@@ -1,22 +1,40 @@
-# Bazaar
+# bazaar
 
-Description: A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication. Let's you broadcast messages to all opened windows, which are listening.
+A publish-subscribe (broadcast-listen) layer for same-origin inter-window communication. Let's you broadcast messages to all opened windows, which are listening.
 
-Home page: [jakut.is/git/BAZAAR/about](https://jakut.is/git/BAZAAR/about/)
+- [Overview](#overview)
+- [Installation](#installation)
+- [API](#api)
+- [Development](#development)
 
-[npm](https://npmjs.org) package: [bazaar](https://npmjs.org/package/bazaar)
+## Overview
 
-![npm stats](https://nodei.co/npm/bazaar.png)
+* Tested on these web browsers:
+  * Mozilla Firefox 2.0+
+  * Opera 10.50+
+  * Google Chrome 5+
+  * Microsoft Internet Explorer 6+
+  * Apple Safari 4.0+
 
-![npm download stats](https://nodei.co/npm-dl/bazaar.png?months=9)
+## Installation
 
-[jam](http://jamjs.org) package: [bazaar](http://jamjs.org/packages/#/details/bazaar)
+  Install manually by adding to your HTML file:
 
-License: [MIT](https://jakut.is/git/BAZAAR/plain/LICENSE)
+    <script src="/path/to/bazaar/bazaar.js"></script>
 
-Author: [Vytautas Jakutis](https://jakut.is)
+  Install with [npm](https://www.npmjs.org/package/bazaar):
 
-# Example usage
+    $ npm install --save bazaar
+
+  Install with [component](http://component.io/jakutis/bazaar):
+
+    $ component install jakutis/bazaar
+
+  Install with [bower](http://bower.io):
+
+    $ bower install --save bazaar
+
+## API
 
 [demo code](https://jakut.is/demos/bazaar/)
 
@@ -38,11 +56,6 @@ Author: [Vytautas Jakutis](https://jakut.is)
         });
     }
 
+## Development
 
-# Supported browsers
-
-  - Mozilla Firefox 2.0+
-  - Opera 10.50+
-  - Google Chrome 5+
-  - Microsoft Internet Explorer 6+
-  - Apple Safari 4.0+
+    TODO
